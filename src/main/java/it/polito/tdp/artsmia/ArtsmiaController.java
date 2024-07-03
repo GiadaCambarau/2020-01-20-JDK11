@@ -1,8 +1,11 @@
 package it.polito.tdp.artsmia;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.artsmia.model.Arco;
+import it.polito.tdp.artsmia.model.Artists;
 import it.polito.tdp.artsmia.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,7 +34,7 @@ public class ArtsmiaController {
     private Button btnCalcolaPercorso;
 
     @FXML
-    private ComboBox<?> boxRuolo;
+    private ComboBox<String> boxRuolo;
 
     @FXML
     private TextField txtArtista;
@@ -42,23 +45,50 @@ public class ArtsmiaController {
     @FXML
     void doArtistiConnessi(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Calcola artisti connessi");
+    	txtResult.appendText("Calcola artisti connessi \n");
+    	List<Arco> archi =model.getConnessi();
+    	for (Arco a : archi) {
+    		txtResult.appendText(a +"\n");
+    	}
     }
 
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Calcola percorso");
+    	txtResult.appendText("Calcola percorso \n");
+    	if (txtArtista.getText().compareTo("")!=0) {
+    		try {
+    			int id = Integer.parseInt(txtArtista.getText());
+    			List<Artists> lista = model.trovaPercorso(id);
+    			if (lista.size()!= 0) {
+    				for (Artists l: lista) {
+    					txtResult.appendText(l+"\n");
+    				}
+    				int peso = model.getPeso();
+    				txtResult.appendText("Il peso migliore è: "+ peso);
+    			}
+    		}catch(NumberFormatException e ) {
+    			return;
+    		}
+    	}
+    	
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Crea grafo");
+    	txtResult.appendText("Crea grafo \n");
+    	if (boxRuolo.getValue() != null) {
+    		String ruolo =boxRuolo.getValue();
+    		model.creaGrafo(ruolo);
+    		txtResult.appendText("Vertici: "+ model.getV()+ "\n");
+    		txtResult.appendText("Archi: "+ model.getA()+"\n");
+    		}
     }
 
     public void setModel(Model model) {
     	this.model = model;
+    	boxRuolo.getItems().addAll(model.getRuoli());
     }
 
     
